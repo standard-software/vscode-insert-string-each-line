@@ -1,4 +1,5 @@
 const vscode = require('vscode');
+const split = require('graphemesplit');
 
 const isBoolean = (value) => typeof value === 'boolean';
 const isUndefined = (value) => typeof value === 'undefined';
@@ -227,11 +228,21 @@ function activate(context) {
           return minIndent;
         }
 
+        const textLength = (str) => {
+          let result = 0;
+          for(const char of split(str)){
+            const codePoint = char.codePointAt(0);
+            const len = 0x00 <= codePoint && codePoint <= 0xFF ? 1 : 2;
+            result += len;
+          }
+          return result;
+        }
+
         const getMaxLength = (lines) => {
           let maxLength = 0;
           for (let i = 0; i < lines.length; i += 1) {
             if (lines[i].trim() === '') { continue; }
-            const length = _trimLast(lines[i], ['\r']).length
+            const length = textLength(_trimLast(lines[i], ['\r']))
             if (maxLength < length) {
               maxLength = length
             }
@@ -287,7 +298,6 @@ function activate(context) {
                     indent
                   );
                 };
-                console.log({lines})
                 ed.replace(range, lines.join(`\n`));
               })
               break;
@@ -329,7 +339,6 @@ function activate(context) {
               editorSelectionsLoopUnsupportTab((range, text) => {
                 const lines = text.split(`\n`);
                 const minIndent = getMinIndent(lines);
-
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') {
                     lines[i] = ' '.repeat(minIndent) + inputInsertString;
@@ -345,7 +354,6 @@ function activate(context) {
               editorSelectionsLoopUnsupportTab((range, text) => {
                 const lines = text.split(`\n`);
                 const minIndent = getMinIndent(lines);
-
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') { continue; }
                   lines[i] = _insert(lines[i], inputInsertString, minIndent)
@@ -358,7 +366,6 @@ function activate(context) {
               editorSelectionsLoopUnsupportTab((range, text) => {
                 const lines = text.split(`\n`);
                 const maxLength = getMaxLength(lines);
-
                 for (let i = 0; i < lines.length; i += 1) {
                   const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
                   const trimLine = _trimLast(lines[i], ['\r']);
@@ -366,7 +373,7 @@ function activate(context) {
                     lines[i] = ' '.repeat(maxLength) + inputInsertString + lastLineBreak;
                     continue;
                   }
-                  lines[i] = trimLine + ' '.repeat(maxLength - trimLine.length) + inputInsertString + lastLineBreak;
+                  lines[i] = trimLine + ' '.repeat(maxLength - textLength(trimLine)) + inputInsertString + lastLineBreak;
                 };
                 ed.replace(range, lines.join(`\n`));
               })
@@ -376,7 +383,6 @@ function activate(context) {
               editorSelectionsLoopUnsupportTab((range, text) => {
                 const lines = text.split(`\n`);
                 const maxLength = getMaxLength(lines);
-
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') { continue; }
                   const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
@@ -385,7 +391,7 @@ function activate(context) {
                     lines[i] = ' '.repeat(maxLength) + inputInsertString + lastLineBreak;
                     continue;
                   }
-                  lines[i] = trimLine + ' '.repeat(maxLength - trimLine.length) + inputInsertString + lastLineBreak;
+                  lines[i] = trimLine + ' '.repeat(maxLength - textLength(trimLine)) + inputInsertString + lastLineBreak;
                 };
                 ed.replace(range, lines.join(`\n`));
               })

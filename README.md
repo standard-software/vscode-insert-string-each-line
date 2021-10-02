@@ -1,5 +1,9 @@
 # vscode-insert-string-each-line README
 
+### 1.1.0
+2021/10/02(Sat)
+- support Japanese Charactor
+
 ### 1.0.0
 2021/10/02(Sat)
 - publish
