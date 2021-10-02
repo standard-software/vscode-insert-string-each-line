@@ -173,7 +173,7 @@ function activate(context) {
     const options = {
       ignoreFocusOut: true,
       placeHolder: ``,
-      prompt: `Insert String`,
+      prompt: `Input Insert/Delete String`,
       value: insertString,
     };
 
