@@ -159,7 +159,7 @@ const _insert = (str, value, index = 0) => {
 
 function activate(context) {
 
-  const insertLineHeadMain = (commandName) => {
+  const extensionMain = (commandName) => {
 
     const editor = vscode.window.activeTextEditor;
     if ( !editor ) {
@@ -209,7 +209,7 @@ function activate(context) {
             f(range, text);
           });
           if (includeTabFlag) {
-            vscode.window.showInformationMessage( 'This feature of Insert Line Head Extension does not support tabs.');
+            vscode.window.showInformationMessage( 'This feature of Insert String Each Line Extension does not support tabs.');
           }
         }
 
@@ -228,6 +228,18 @@ function activate(context) {
           }
           if (minIndent === Infinity) { minIndent = 0; }
           return minIndent;
+        }
+
+        const getMaxLength = (lines) => {
+          let maxLength = 0;
+          for (let i = 0; i < lines.length; i += 1) {
+            if (lines[i].trim() === '') { continue; }
+            const length = _trimLast(lines[i], ['\r']).length
+            if (maxLength < length) {
+              maxLength = length
+            }
+          }
+          return maxLength;
         }
 
         switch (commandName) {
@@ -345,6 +357,24 @@ function activate(context) {
               })
               break;
 
+            case `InsertMaxLengthAllLines`:
+              editorSelectionsLoopUnsupportTab((range, text) => {
+                const lines = text.split(`\n`);
+                const maxLength = getMaxLength(lines);
+
+                for (let i = 0; i < lines.length; i += 1) {
+                  const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
+                  const trimLine = _trimLast(lines[i], ['\r']);
+                  if (trimLine === '') {
+                    lines[i] = ' '.repeat(maxLength) + inputInsertString + lastLineBreak;
+                    continue;
+                  }
+                  lines[i] = trimLine + ' '.repeat(maxLength - trimLine.length) + inputInsertString + lastLineBreak;
+                };
+                ed.replace(range, lines.join(`\n`));
+              })
+              break;
+
             case `DeleteBeginText`:
               editorSelectionsLoop((range, text) => {
                 const lines = text.split(`\n`);
@@ -388,61 +418,67 @@ function activate(context) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginLineAllLines`, () => {
-      insertLineHeadMain(`InsertBeginLineAllLines`);
+      extensionMain(`InsertBeginLineAllLines`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginLineOnlyTextLines`, () => {
-      insertLineHeadMain(`InsertBeginLineOnlyTextLines`);
+      extensionMain(`InsertBeginLineOnlyTextLines`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginLineOnlyMinIndent`, () => {
-      insertLineHeadMain(`InsertBeginLineOnlyMinIndent`);
+      extensionMain(`InsertBeginLineOnlyMinIndent`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginTextAllLines`, () => {
-      insertLineHeadMain(`InsertBeginTextAllLines`);
+      extensionMain(`InsertBeginTextAllLines`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginTextOnlyTextLines`, () => {
-      insertLineHeadMain(`InsertBeginTextOnlyTextLines`);
+      extensionMain(`InsertBeginTextOnlyTextLines`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginTextOnlyMinIndent`, () => {
-      insertLineHeadMain(`InsertBeginTextOnlyMinIndent`);
+      extensionMain(`InsertBeginTextOnlyMinIndent`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertMinIndentAllLines`, () => {
-      insertLineHeadMain(`InsertMinIndentAllLines`);
+      extensionMain(`InsertMinIndentAllLines`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertMinIndentOnlyTextLines`, () => {
-      insertLineHeadMain(`InsertMinIndentOnlyTextLines`);
+      extensionMain(`InsertMinIndentOnlyTextLines`);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`InsertStringEachLine.InsertMaxLengthAllLines`, () => {
+      extensionMain(`InsertMaxLengthAllLines`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.DeleteBeginText`, () => {
-      insertLineHeadMain(`DeleteBeginText`);
+      extensionMain(`DeleteBeginText`);
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.DeleteEndText`, () => {
-      insertLineHeadMain(`DeleteEndText`);
+      extensionMain(`DeleteEndText`);
     })
   );
 

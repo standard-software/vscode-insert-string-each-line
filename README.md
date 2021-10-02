@@ -5,6 +5,7 @@
 2021/10/02(Sat)
 
 - Add DeleteEndText
+- Add InsertMaxLengthAllLines
 
 ### 0.1.1
 2021/10/02(Sat)
