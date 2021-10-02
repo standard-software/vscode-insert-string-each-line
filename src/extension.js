@@ -2,6 +2,27 @@ const vscode = require('vscode');
 
 const isBoolean = (value) => typeof value === 'boolean';
 const isUndefined = (value) => typeof value === 'undefined';
+const isNumber = (value) => {
+  return (typeof value === 'number' && (isFinite(value)));
+};
+
+const __max = (array) => {
+  if (array.length === 0) {
+    return null;
+  }
+  let result = array[0];
+  for (let i = 0, l = array.length; i < l; i += 1) {
+    if (!isNumber(array[i])) {
+      throw new TypeError(
+        '__max args(array) element is not number',
+      );
+    }
+    if (result < array[i]) {
+      result = array[i];
+    }
+  }
+  return result;
+};
 
 const _indexOfFirst = (str, search, indexStart) => {
   if (search === '') {
@@ -10,8 +31,25 @@ const _indexOfFirst = (str, search, indexStart) => {
   return str.indexOf(search, indexStart);
 };
 
+const _indexOfLast = (
+  str, search, indexStart = __max([0, str.length - 1]),
+) => {
+  if (search === '') {
+    return -1;
+  }
+  return str.lastIndexOf(search, indexStart);
+};
+
 const _isFirst = (str, search) => {
   return _indexOfFirst(str, search) === 0;
+};
+
+const _isLast = (str, search) => {
+  const result = _indexOfLast(str, search);
+  if (result === -1) {
+    return false;
+  }
+  return result === str.length - search.length;
 };
 
 const _findFirstIndex = (array, func) => {
@@ -57,6 +95,12 @@ const _deleteFirst = (str, length = 1) => {
   );
 };
 
+const _deleteLast = (str, length = 1) => {
+  return _deleteLength(
+    str, str.length - length, length,
+  );
+};
+
 const _trimFirst = (
   str,
   valueArray = [' ', '\t', '\r', '\n'],
@@ -69,6 +113,22 @@ const _trimFirst = (
       break;
     }
     str = _deleteFirst(str, value.length);
+  }
+  return str;
+};
+
+const _trimLast = (
+  str,
+  valueArray = [' ', '\r', '\n'],
+) => {
+  while (true) {
+    const value = _findFirst(
+      valueArray, value => _isLast(str, value),
+    );
+    if (isUndefined(value)) {
+      break;
+    }
+    str = _deleteLast(str, value.length);
   }
   return str;
 };
@@ -299,6 +359,26 @@ function activate(context) {
               })
               break;
 
+            case `DeleteEndText`:
+              editorSelectionsLoop((range, text) => {
+                const lines = text.split(`\n`);
+                for (let i = 0; i < lines.length; i += 1) {
+                  if (lines[i].trim() === '') { continue; }
+                  const lastCr = _isLast(lines[i], '\r');
+                  const trimLine = _trimLast(lines[i], [' ', '\t', '\r']);
+                  if (_isLast(trimLine, inputInsertString)) {
+                    const line = _deleteLast(trimLine, inputInsertString.length);
+                    if (lastCr) {
+                      lines[i] = line + '\r';
+                    } else {
+                      lines[i] = line;
+                    }
+                  }
+                };
+                ed.replace(range, lines.join(`\n`));
+              })
+              break;
+
           default:
             new Error(`insertLineHeadMain`);
         }
@@ -357,6 +437,12 @@ function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.DeleteBeginText`, () => {
       insertLineHeadMain(`DeleteBeginText`);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`InsertStringEachLine.DeleteEndText`, () => {
+      insertLineHeadMain(`DeleteEndText`);
     })
   );
 

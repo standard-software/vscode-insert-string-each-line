@@ -1,6 +1,11 @@
 # vscode-insert-string-each-line README
 
 
+### 0.2.0
+2021/10/02(Sat)
+
+- Add DeleteEndText
+
 ### 0.1.1
 2021/10/02(Sat)
 

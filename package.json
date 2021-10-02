@@ -2,7 +2,7 @@
   "name": "vscode-insert-string-each-line",
   "displayName": "Insert String Each Line",
   "description": "Insert a string on each line.",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "publisher": "SatoshiYamamoto",
   "author": {
     "name": "Satoshi Yamamoto",
@@ -29,7 +29,8 @@
     "onCommand:InsertStringEachLine.InsertBeginTextOnlyMinIndent",
     "onCommand:InsertStringEachLine.InsertMinIndentAllLines",
     "onCommand:InsertStringEachLine.InsertMinIndentOnlyTextLines",
-    "onCommand:InsertStringEachLine.DeleteBeginText"
+    "onCommand:InsertStringEachLine.DeleteBeginText",
+    "onCommand:InsertStringEachLine.DeleteEndText"
   ],
   "main": "./src/extension.js",
   "contributes": {
@@ -69,6 +70,10 @@
       {
         "command": "InsertStringEachLine.DeleteBeginText",
         "title": "Insert String Each Line : Delete String Begin of Text"
+      },
+      {
+        "command": "InsertStringEachLine.DeleteEndText",
+        "title": "Insert String Each Line : Delete String End of Text"
       }
     ],
     "configuration": {
