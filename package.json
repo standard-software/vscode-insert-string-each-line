@@ -2,7 +2,7 @@
   "name": "vscode-insert-string-each-line",
   "displayName": "Insert String Each Line",
   "description": "Insert a string on each line.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "SatoshiYamamoto",
   "author": {
     "name": "Satoshi Yamamoto",
@@ -24,6 +24,7 @@
     "onCommand:InsertStringEachLine.InsertBeginLineAllLines",
     "onCommand:InsertStringEachLine.InsertBeginLineOnlyTextLines",
     "onCommand:InsertStringEachLine.InsertBeginLineOnlyMinIndent",
+    "onCommand:InsertStringEachLine.InsertBeginTextAllLines",
     "onCommand:InsertStringEachLine.InsertBeginTextOnlyTextLines",
     "onCommand:InsertStringEachLine.InsertBeginTextOnlyMinIndent",
     "onCommand:InsertStringEachLine.InsertMinIndentAllLines",
@@ -35,23 +36,27 @@
     "commands": [
       {
         "command": "InsertStringEachLine.InsertBeginLineAllLines",
-        "title": "Insert String Each Line : Line Head : All Lines"
+        "title": "Insert String Each Line : Begin Line : All Lines"
       },
       {
         "command": "InsertStringEachLine.InsertBeginLineOnlyTextLines",
-        "title": "Insert String Each Line : Line Head : Only Text Lines"
+        "title": "Insert String Each Line : Begin Line : Only Text Lines"
       },
       {
         "command": "InsertStringEachLine.InsertBeginLineOnlyMinIndent",
-        "title": "Insert String Each Line : Line Head : Only Min Indent Text Lines"
+        "title": "Insert String Each Line : Begin Line : Only Min Indent Text Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertBeginTextAllLines",
+        "title": "Insert String Each Line : Begin Text : All Lines"
       },
       {
         "command": "InsertStringEachLine.InsertBeginTextOnlyTextLines",
-        "title": "Insert String Each Line : Text Head : Only Text Lines"
+        "title": "Insert String Each Line : Begin Text : Only Text Lines"
       },
       {
         "command": "InsertStringEachLine.InsertBeginTextOnlyMinIndent",
-        "title": "Insert String Each Line : Text Head : Only Min Indent Text Lines"
+        "title": "Insert String Each Line : Begin Text : Only Min Indent Text Lines"
       },
       {
         "command": "InsertStringEachLine.InsertMinIndentAllLines",

@@ -153,12 +153,15 @@ function activate(context) {
           }
         }
 
+        const getIndent = (line) => {
+          return line.length - _trimFirst(line, [' ', '\t']).length;
+        }
+
         const getMinIndent = (lines) => {
           let minIndent = Infinity;
           for (let i = 0; i < lines.length; i += 1) {
             if (lines[i].trim() === '') { continue; }
-            const trimLine = _trimFirst(lines[i]);
-            const indent = lines[i].length - trimLine.length;
+            const indent = getIndent(lines[i])
             if (indent < minIndent) {
               minIndent = indent
             }
@@ -197,8 +200,7 @@ function activate(context) {
 
               for (let i = 0; i < lines.length; i += 1) {
                 if (lines[i].trim() === '') { continue; }
-                const trimLine = _trimFirst(lines[i]);
-                const indent = lines[i].length - trimLine.length;
+                const indent = getIndent(lines[i])
                 if (indent !== minIndent) { continue; }
                 lines[i] = inputInsertString + lines[i];
               };
@@ -206,13 +208,27 @@ function activate(context) {
             })
             break;
 
+            case `InsertBeginTextAllLines`:
+              editorSelectionsLoop((range, text) => {
+                const lines = text.split(`\n`);
+                for (let i = 0; i < lines.length; i += 1) {
+                  const indent = getIndent(lines[i])
+                  lines[i] = _insert(
+                    lines[i], inputInsertString,
+                    indent
+                  );
+                };
+                console.log({lines})
+                ed.replace(range, lines.join(`\n`));
+              })
+              break;
+
             case `InsertBeginTextOnlyTextLines`:
               editorSelectionsLoop((range, text) => {
                 const lines = text.split(`\n`);
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') { continue; }
-                  const trimLine = _trimFirst(lines[i]);
-                  const indent = lines[i].length - trimLine.length;
+                  const indent = getIndent(lines[i])
                   lines[i] = _insert(
                     lines[i], inputInsertString,
                     indent
@@ -229,8 +245,7 @@ function activate(context) {
 
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') { continue; }
-                  const trimLine = _trimFirst(lines[i]);
-                  const indent = lines[i].length - trimLine.length;
+                  const indent = getIndent(lines[i])
                   if (indent !== minIndent) { continue; }
                   lines[i] = _insert(
                     lines[i], inputInsertString,
@@ -275,7 +290,7 @@ function activate(context) {
                 const lines = text.split(`\n`);
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') { continue; }
-                  const trimLine = _trimFirst(lines[i]);
+                  const trimLine = _trimFirst(lines[i], [' ', '\t']);
                   if (_isFirst(trimLine, inputInsertString)) {
                     lines[i] = lines[i].replace(inputInsertString, '');
                   }
@@ -306,6 +321,12 @@ function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginLineOnlyMinIndent`, () => {
       insertLineHeadMain(`InsertBeginLineOnlyMinIndent`);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginTextAllLines`, () => {
+      insertLineHeadMain(`InsertBeginTextAllLines`);
     })
   );
 
