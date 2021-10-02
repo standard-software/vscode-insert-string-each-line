@@ -184,17 +184,17 @@ function activate(context) {
       }
       editor.edit(ed => {
 
-        const editorSelectionsLoop = (f) => {
+        const editorSelectionsLoop = (func) => {
           editor.selections.forEach(select => {
             const range = new vscode.Range(
               select.start.line, 0, select.end.line, select.end.character
             );
             const text = editor.document.getText(range);
-            f(range, text);
+            func(range, text);
           });
         }
 
-        const editorSelectionsLoopUnsupportTab = (f) => {
+        const editorSelectionsLoopUnsupportTab = (func) => {
           let includeTabFlag = false;
           editor.selections.forEach(select => {
             const range = new vscode.Range(
@@ -204,7 +204,7 @@ function activate(context) {
             if (text.includes(`\t`)) {
               includeTabFlag = true
             }
-            f(range, text);
+            func(range, text);
           });
           if (includeTabFlag) {
             vscode.window.showInformationMessage( 'This feature of Insert String Each Line Extension does not support tabs.');
@@ -250,183 +250,192 @@ function activate(context) {
           return maxLength;
         }
 
+        const textLoopAllLines = (text, func, linesFunc = () => {}) => {
+          const lines = text.split(`\n`);
+          const linesFuncResult = linesFunc(lines);
+          for (let i = 0; i < lines.length; i += 1) {
+            func(lines, i, linesFuncResult);
+          };
+          return lines.join('\n');
+        }
+
+        const textLoopOnlyTextLines = (text, func, linesFunc = () => {}) => {
+          const lines = text.split(`\n`);
+          const linesFuncResult = linesFunc(lines);
+          for (let i = 0; i < lines.length; i += 1) {
+            if (lines[i].trim() === '') { continue; }
+            func(lines, i, linesFuncResult);
+          };
+          return lines.join('\n');
+        }
+
+        const textLoopOnlyMinIndent = (text, func) => {
+          const lines = text.split(`\n`);
+          const minIndent = getMinIndent(lines);
+          for (let i = 0; i < lines.length; i += 1) {
+            if (lines[i].trim() === '') { continue; }
+            const indent = getIndent(lines[i]);
+            if (indent !== minIndent) { continue; }
+            func(lines, i, indent);
+          };
+          return lines.join('\n');
+        }
+
+        const textLoopAllLinesMinIndent = (text, func) => {
+          return textLoopAllLines(text, func, getMinIndent)
+        }
+
+        const textLoopOnlyTextLinesMinIndent = (text, func) => {
+          return textLoopOnlyTextLines(text, func, getMinIndent)
+        }
+
+        const textLoopAllLinesMaxLength = (text, func) => {
+          return textLoopAllLines(text, func, getMaxLength)
+        }
+
+        const textLoopOnlyTextLinesMaxLength = (text, func) => {
+          return textLoopOnlyTextLines(text, func, getMaxLength)
+        }
+
         switch (commandName) {
 
           case `InsertBeginLineAllLines`:
             editorSelectionsLoop((range, text) => {
-              const lines = text.split(`\n`);
-              for (let i = 0; i < lines.length; i += 1) {
+              text = textLoopAllLines(text, (lines, i) => {
                 lines[i] = inputInsertString + lines[i];
-              };
-              ed.replace(range, lines.join(`\n`));
+              })
+              ed.replace(range, text);
             })
             break;
 
           case `InsertBeginLineOnlyTextLines`:
             editorSelectionsLoop((range, text) => {
-              const lines = text.split(`\n`);
-              for (let i = 0; i < lines.length; i += 1) {
-                if (lines[i].trim() === '') { continue; }
+              text = textLoopOnlyTextLines(text, (lines, i) => {
                 lines[i] = inputInsertString + lines[i];
-              };
-              ed.replace(range, lines.join(`\n`));
+              })
+              ed.replace(range, text);
             })
             break;
 
           case `InsertBeginLineOnlyMinIndent`:
             editorSelectionsLoop((range, text) => {
-              const lines = text.split(`\n`);
-              const minIndent = getMinIndent(lines);
-
-              for (let i = 0; i < lines.length; i += 1) {
-                if (lines[i].trim() === '') { continue; }
-                const indent = getIndent(lines[i])
-                if (indent !== minIndent) { continue; }
+              text = textLoopOnlyMinIndent(text, (lines, i) => {
                 lines[i] = inputInsertString + lines[i];
-              };
-              ed.replace(range, lines.join(`\n`));
+              })
+              ed.replace(range, text);
             })
             break;
 
-            case `InsertBeginTextAllLines`:
-              editorSelectionsLoop((range, text) => {
-                const lines = text.split(`\n`);
-                for (let i = 0; i < lines.length; i += 1) {
-                  const indent = getIndent(lines[i])
-                  lines[i] = _insert(
-                    lines[i], inputInsertString,
-                    indent
-                  );
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `InsertBeginTextAllLines`:
+            editorSelectionsLoop((range, text) => {
+              text = textLoopAllLines(text, (lines, i) => {
+                lines[i] = _insert(
+                  lines[i], inputInsertString,
+                  getIndent(lines[i]),
+                );
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
 
-            case `InsertBeginTextOnlyTextLines`:
-              editorSelectionsLoop((range, text) => {
-                const lines = text.split(`\n`);
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (lines[i].trim() === '') { continue; }
-                  const indent = getIndent(lines[i])
-                  lines[i] = _insert(
-                    lines[i], inputInsertString,
-                    indent
-                  );
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `InsertBeginTextOnlyTextLines`:
+            editorSelectionsLoop((range, text) => {
+              text = textLoopOnlyTextLines(text, (lines, i) => {
+                lines[i] = _insert(
+                  lines[i], inputInsertString,
+                  getIndent(lines[i]),
+                );
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
 
-            case `InsertBeginTextOnlyMinIndent`:
-              editorSelectionsLoopUnsupportTab((range, text) => {
-                const lines = text.split(`\n`);
-                const minIndent = getMinIndent(lines);
-
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (lines[i].trim() === '') { continue; }
-                  const indent = getIndent(lines[i])
-                  if (indent !== minIndent) { continue; }
-                  lines[i] = _insert(
-                    lines[i], inputInsertString,
-                    indent
-                  );
-                };
-                ed.replace(range, lines.join(`\n`));
-              });
-              break;
-
-            case `InsertMinIndentAllLines`:
-              editorSelectionsLoopUnsupportTab((range, text) => {
-                const lines = text.split(`\n`);
-                const minIndent = getMinIndent(lines);
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (lines[i].trim() === '') {
-                    lines[i] = ' '.repeat(minIndent) + inputInsertString;
-                    continue;
-                  }
-                  lines[i] = _insert(lines[i], inputInsertString, minIndent)
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `InsertBeginTextOnlyMinIndent`:
+            editorSelectionsLoopUnsupportTab((range, text) => {
+              text = textLoopOnlyMinIndent(text, (lines, i, indent) => {
+                lines[i] = _insert(
+                  lines[i], inputInsertString,
+                  indent,
+                );
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
 
-            case `InsertMinIndentOnlyTextLines`:
-              editorSelectionsLoopUnsupportTab((range, text) => {
-                const lines = text.split(`\n`);
-                const minIndent = getMinIndent(lines);
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (lines[i].trim() === '') { continue; }
-                  lines[i] = _insert(lines[i], inputInsertString, minIndent)
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `InsertMinIndentAllLines`:
+            editorSelectionsLoopUnsupportTab((range, text) => {
+              text = textLoopAllLinesMinIndent(text, (lines, i, minIndent) => {
+                if (lines[i].trim() === '') {
+                  lines[i] = ' '.repeat(minIndent) + inputInsertString;
+                  return;
+                }
+                lines[i] = _insert(lines[i], inputInsertString, minIndent)
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
 
-            case `InsertMaxLengthAllLines`:
-              editorSelectionsLoopUnsupportTab((range, text) => {
-                const lines = text.split(`\n`);
-                const maxLength = getMaxLength(lines);
-                for (let i = 0; i < lines.length; i += 1) {
-                  const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
-                  const trimLine = _trimLast(lines[i], ['\r']);
-                  if (trimLine === '') {
-                    lines[i] = ' '.repeat(maxLength) + inputInsertString + lastLineBreak;
-                    continue;
-                  }
-                  lines[i] = trimLine + ' '.repeat(maxLength - textLength(trimLine)) + inputInsertString + lastLineBreak;
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `InsertMinIndentOnlyTextLines`:
+            editorSelectionsLoopUnsupportTab((range, text) => {
+              text = textLoopOnlyTextLinesMinIndent(text, (lines, i, minIndent) => {
+                lines[i] = _insert(lines[i], inputInsertString, minIndent)
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
 
-            case `InsertMaxLengthOnlyTextLines`:
-              editorSelectionsLoopUnsupportTab((range, text) => {
-                const lines = text.split(`\n`);
-                const maxLength = getMaxLength(lines);
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (lines[i].trim() === '') { continue; }
-                  const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
-                  const trimLine = _trimLast(lines[i], ['\r']);
-                  if (trimLine === '') {
-                    lines[i] = ' '.repeat(maxLength) + inputInsertString + lastLineBreak;
-                    continue;
-                  }
-                  lines[i] = trimLine + ' '.repeat(maxLength - textLength(trimLine)) + inputInsertString + lastLineBreak;
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `InsertMaxLengthAllLines`:
+            editorSelectionsLoopUnsupportTab((range, text) => {
+              text = textLoopAllLinesMaxLength(text, (lines, i, maxLength) => {
+                const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
+                const trimLine = _trimLast(lines[i], ['\r']);
+                lines[i] = trimLine
+                  + ' '.repeat(maxLength - textLength(trimLine))
+                  + inputInsertString + lastLineBreak;
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
 
-            case `DeleteBeginText`:
-              editorSelectionsLoop((range, text) => {
-                const lines = text.split(`\n`);
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (lines[i].trim() === '') { continue; }
-                  const trimLine = _trimFirst(lines[i], [' ', '\t']);
-                  const trimFirstInput = _trimFirst(inputInsertString, [' ']);
-                  if (_isFirst(trimLine, trimFirstInput)) {
-                    lines[i] = lines[i].replace(inputInsertString, '');
-                  }
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `InsertMaxLengthOnlyTextLines`:
+            editorSelectionsLoopUnsupportTab((range, text) => {
+              text = textLoopOnlyTextLinesMaxLength(text, (lines, i, maxLength) => {
+                const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
+                const trimLine = _trimLast(lines[i], ['\r']);
+                lines[i] = trimLine
+                  + ' '.repeat(maxLength - textLength(trimLine))
+                  + inputInsertString + lastLineBreak;
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
 
-            case `DeleteEndText`:
-              editorSelectionsLoop((range, text) => {
-                const lines = text.split(`\n`);
-                for (let i = 0; i < lines.length; i += 1) {
-                  if (lines[i].trim() === '') { continue; }
-                  const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
-                  const trimLine = _trimLast(lines[i], [' ', '\t', '\r']);
-                  const trimLastInput = _trimLast(inputInsertString, [' ']);
-                  if (_isLast(trimLine, trimLastInput)) {
-                    lines[i] = _trimLast(_deleteLast(trimLine, trimLastInput.length), [' ', '\t']) + lastLineBreak;
-                  }
-                };
-                ed.replace(range, lines.join(`\n`));
+          case `DeleteBeginText`:
+            editorSelectionsLoop((range, text) => {
+              text = textLoopOnlyTextLines(text, (lines, i) => {
+                const trimLine = _trimFirst(lines[i], [' ', '\t']);
+                const trimFirstInput = _trimFirst(inputInsertString, [' ']);
+                if (_isFirst(trimLine, trimFirstInput)) {
+                  lines[i] = lines[i].replace(inputInsertString, '');
+                }
               })
-              break;
+              ed.replace(range, text);
+            })
+            break;
+
+          case `DeleteEndText`:
+            editorSelectionsLoop((range, text) => {
+              text = textLoopOnlyTextLines(text, (lines, i) => {
+                const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
+                const trimLine = _trimLast(lines[i], [' ', '\t', '\r']);
+                const trimLastInput = _trimLast(inputInsertString, [' ']);
+                if (_isLast(trimLine, trimLastInput)) {
+                  lines[i] = _trimLast(_deleteLast(trimLine, trimLastInput.length), [' ', '\t']) + lastLineBreak;
+                }
+              })
+              ed.replace(range, text);
+            })
+            break;
 
           default:
             new Error(`insertLineHeadMain`);
