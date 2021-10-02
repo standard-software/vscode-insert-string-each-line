@@ -6,6 +6,7 @@
 
 - Add DeleteEndText
 - Add InsertMaxLengthAllLines
+- Add InsertMaxLengthOnlyTextLines
 
 ### 0.1.1
 2021/10/02(Sat)

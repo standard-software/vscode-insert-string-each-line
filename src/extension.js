@@ -177,9 +177,6 @@ function activate(context) {
     };
 
     vscode.window.showInputBox(options).then(inputInsertString => {
-      if (!inputInsertString) {
-        return;
-      }
       if (!vscode.window.activeTextEditor) {
         vscode.window.showInformationMessage( `No editor is active` );
         return;
@@ -375,13 +372,33 @@ function activate(context) {
               })
               break;
 
+            case `InsertMaxLengthOnlyTextLines`:
+              editorSelectionsLoopUnsupportTab((range, text) => {
+                const lines = text.split(`\n`);
+                const maxLength = getMaxLength(lines);
+
+                for (let i = 0; i < lines.length; i += 1) {
+                  if (lines[i].trim() === '') { continue; }
+                  const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
+                  const trimLine = _trimLast(lines[i], ['\r']);
+                  if (trimLine === '') {
+                    lines[i] = ' '.repeat(maxLength) + inputInsertString + lastLineBreak;
+                    continue;
+                  }
+                  lines[i] = trimLine + ' '.repeat(maxLength - trimLine.length) + inputInsertString + lastLineBreak;
+                };
+                ed.replace(range, lines.join(`\n`));
+              })
+              break;
+
             case `DeleteBeginText`:
               editorSelectionsLoop((range, text) => {
                 const lines = text.split(`\n`);
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') { continue; }
                   const trimLine = _trimFirst(lines[i], [' ', '\t']);
-                  if (_isFirst(trimLine, inputInsertString)) {
+                  const trimFirstInput = _trimFirst(inputInsertString, [' ']);
+                  if (_isFirst(trimLine, trimFirstInput)) {
                     lines[i] = lines[i].replace(inputInsertString, '');
                   }
                 };
@@ -394,15 +411,11 @@ function activate(context) {
                 const lines = text.split(`\n`);
                 for (let i = 0; i < lines.length; i += 1) {
                   if (lines[i].trim() === '') { continue; }
-                  const lastCr = _isLast(lines[i], '\r');
+                  const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
                   const trimLine = _trimLast(lines[i], [' ', '\t', '\r']);
-                  if (_isLast(trimLine, inputInsertString)) {
-                    const line = _deleteLast(trimLine, inputInsertString.length);
-                    if (lastCr) {
-                      lines[i] = line + '\r';
-                    } else {
-                      lines[i] = line;
-                    }
+                  const trimLastInput = _trimLast(inputInsertString, [' ']);
+                  if (_isLast(trimLine, trimLastInput)) {
+                    lines[i] = _trimLast(_deleteLast(trimLine, trimLastInput.length), [' ', '\t']) + lastLineBreak;
                   }
                 };
                 ed.replace(range, lines.join(`\n`));
@@ -467,6 +480,12 @@ function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertMaxLengthAllLines`, () => {
       extensionMain(`InsertMaxLengthAllLines`);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`InsertStringEachLine.InsertMaxLengthOnlyTextLines`, () => {
+      extensionMain(`InsertMaxLengthOnlyTextLines`);
     })
   );
 
