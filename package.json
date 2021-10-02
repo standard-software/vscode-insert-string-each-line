@@ -2,7 +2,7 @@
   "name": "vscode-insert-string-each-line",
   "displayName": "Insert String Each Line",
   "description": "Insert a string on each line.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "publisher": "SatoshiYamamoto",
   "author": {
     "name": "Satoshi Yamamoto",
@@ -21,15 +21,65 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vscode-insert-string-each-line.helloWorld"
+    "onCommand:InsertStringEachLine.InsertBeginLineAllLines",
+    "onCommand:InsertStringEachLine.InsertBeginLineOnlyTextLines",
+    "onCommand:InsertStringEachLine.InsertBeginLineOnlyMinIndent",
+    "onCommand:InsertStringEachLine.InsertBeginTextOnlyTextLines",
+    "onCommand:InsertStringEachLine.InsertBeginTextOnlyMinIndent",
+    "onCommand:InsertStringEachLine.InsertMinIndentAllLines",
+    "onCommand:InsertStringEachLine.InsertMinIndentOnlyTextLines",
+    "onCommand:InsertStringEachLine.DeleteBeginText"
   ],
   "main": "./src/extension.js",
   "contributes": {
-    "commands": [{
-      "command": "vscode-insert-string-each-line.helloWorld",
-      "title": "Hello World"
-
-    }]
+    "commands": [
+      {
+        "command": "InsertStringEachLine.InsertBeginLineAllLines",
+        "title": "Insert String Each Line : Line Head : All Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertBeginLineOnlyTextLines",
+        "title": "Insert String Each Line : Line Head : Only Text Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertBeginLineOnlyMinIndent",
+        "title": "Insert String Each Line : Line Head : Only Min Indent Text Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertBeginTextOnlyTextLines",
+        "title": "Insert String Each Line : Text Head : Only Text Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertBeginTextOnlyMinIndent",
+        "title": "Insert String Each Line : Text Head : Only Min Indent Text Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertMinIndentAllLines",
+        "title": "Insert String Each Line : Min Indent : All Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertMinIndentOnlyTextLines",
+        "title": "Insert String Each Line : Min Indent : Only Text Lines"
+      },
+      {
+        "command": "InsertStringEachLine.DeleteBeginText",
+        "title": "Insert String Each Line : Delete String Begin of Text"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Insert String Each Line",
+      "properties": {
+        "InsertStringEachLine.insertString": {
+          "type": "string",
+          "default": "> ",
+          "description": "Insert String"
+        }
+      },
+      "default": {
+        "insertString": "> "
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",
