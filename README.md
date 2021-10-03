@@ -1,4 +1,65 @@
-# vscode-insert-string-each-line README
+# VSCode extension - Insert String Each Line
+
+[![Version][version-badge]][marketplace]
+[![Ratings][ratings-badge]][marketplace-ratings]
+[![Installs][installs-badge]][marketplace]
+[![License][license-badge]][license]
+
+This extension inserts or removes strings at the beginning of a line, at the beginning of a line string, at the end of a line string.
+
+## Install
+
+Search for "Insert String Each Line" in the Marketplace
+https://marketplace.visualstudio.com/vscode
+
+or here
+https://marketplace.visualstudio.com/items?itemName=SatoshiYamamoto.vscode-insert-string-each-line
+
+## Usage
+
+Processing is performed according to the following command for each line in the selected range.
+Enter the character string after selecting the command.
+
+Following commands are available:
+
+- `Insert String Each Line : Begin Line : All Lines`
+- `Insert String Each Line : Begin Line : Only Text Lines`
+- `Insert String Each Line : Begin Line : Only Min Indent Text Lines`
+- `Insert String Each Line : Begin Text : All Lines`
+- `Insert String Each Line : Begin Text : Only Text Lines`
+- `Insert String Each Line : Begin Text : Only Min Indent Text Lines`
+- `Insert String Each Line : Min Indent : All Lines`
+- `Insert String Each Line : Min Indent : Only Text Lines`
+- `Insert String Each Line : Max Line Length : All Lines`
+- `Insert String Each Line : Max Line Length : Only Text Lines`
+- `Insert String Each Line : Delete String Begin of Text`
+- `Insert String Each Line : Delete String End of Text`
+
+Begin Line = Beginning of line.(line[0])  
+Begin Text = The beginning of the text on each line.  
+Min Indent = Minimum indentation position in the selection.  
+Max Line Length = End of line at maximum length of selection.  
+
+## License
+
+Released under the [MIT License][license].
+
+[version-badge]: https://vsmarketplacebadge.apphb.com/version/SatoshiYamamoto.vscode-insert-string-each-line.svg
+[ratings-badge]: https://vsmarketplacebadge.apphb.com/rating/SatoshiYamamoto.vscode-insert-string-each-line.svg
+[installs-badge]: https://vsmarketplacebadge.apphb.com/installs/SatoshiYamamoto.vscode-insert-string-each-line.svg
+[license-badge]: https://img.shields.io/github/license/standard-software/vscode-insert-string-each-line.svg
+
+[marketplace]: https://marketplace.visualstudio.com/items?itemName=SatoshiYamamoto.vscode-insert-string-each-line
+[marketplace-ratings]: https://marketplace.visualstudio.com/items?itemName=SatoshiYamamoto.vscode-insert-string-each-line#review-details
+[license]: https://github.com/standard-software/vscode-insert-string-each-line/blob/master/LICENSE
+
+## Version
+
+### 1.2.0
+2021/10/03(Sun)
+- Readme
+- Add InsertEndLineAllLines
+- Add InsertEndLineOnlyTextLines
 
 ### 1.1.1
 2021/10/02(Sat)

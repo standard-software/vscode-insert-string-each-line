@@ -268,6 +268,13 @@ function activate(context) {
           };
           return lines.join('\n');
         }
+        /** Readability is low, so drop it */
+        // const textLoopOnlyTextLines = (text, func, linesFunc = () => {}) => {
+        //   return textLoopAllLines(text, (lines, i, linesFuncResult) => {
+        //     if (lines[i].trim() === '') { return; }
+        //     func(lines, i, linesFuncResult)
+        //   }, linesFunc)
+        // }
 
         const textLoopOnlyMinIndent = (text, func) => {
           const lines = text.split(`\n`);
@@ -280,22 +287,15 @@ function activate(context) {
           };
           return lines.join('\n');
         }
-
-        const textLoopAllLinesMinIndent = (text, func) => {
-          return textLoopAllLines(text, func, getMinIndent)
-        }
-
-        const textLoopOnlyTextLinesMinIndent = (text, func) => {
-          return textLoopOnlyTextLines(text, func, getMinIndent)
-        }
-
-        const textLoopAllLinesMaxLength = (text, func) => {
-          return textLoopAllLines(text, func, getMaxLength)
-        }
-
-        const textLoopOnlyTextLinesMaxLength = (text, func) => {
-          return textLoopOnlyTextLines(text, func, getMaxLength)
-        }
+        /** Readability is low, so drop it */
+        // const textLoopOnlyMinIndent = (text, func) => {
+        //   return textLoopAllLines(text, (lines, i, minIndent) => {
+        //     if (lines[i].trim() === '') { return; }
+        //     const indent = getIndent(lines[i]);
+        //     if (indent !== minIndent) { return; }
+        //     func(lines, i, indent);
+        //   }, getMinIndent)
+        // }
 
         switch (commandName) {
 
@@ -364,48 +364,48 @@ function activate(context) {
 
           case `InsertMinIndentAllLines`:
             editorSelectionsLoopUnsupportTab((range, text) => {
-              text = textLoopAllLinesMinIndent(text, (lines, i, minIndent) => {
+              text = textLoopAllLines(text, (lines, i, minIndent) => {
                 if (lines[i].trim() === '') {
                   lines[i] = ' '.repeat(minIndent) + inputInsertString;
                   return;
                 }
                 lines[i] = _insert(lines[i], inputInsertString, minIndent)
-              })
+              }, getMinIndent)
               ed.replace(range, text);
             })
             break;
 
           case `InsertMinIndentOnlyTextLines`:
             editorSelectionsLoopUnsupportTab((range, text) => {
-              text = textLoopOnlyTextLinesMinIndent(text, (lines, i, minIndent) => {
+              text = textLoopOnlyTextLines(text, (lines, i, minIndent) => {
                 lines[i] = _insert(lines[i], inputInsertString, minIndent)
               })
               ed.replace(range, text);
-            })
+            }, getMinIndent)
             break;
 
           case `InsertMaxLengthAllLines`:
             editorSelectionsLoopUnsupportTab((range, text) => {
-              text = textLoopAllLinesMaxLength(text, (lines, i, maxLength) => {
+              text = textLoopAllLines(text, (lines, i, maxLength) => {
                 const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
                 const trimLine = _trimLast(lines[i], ['\r']);
                 lines[i] = trimLine
                   + ' '.repeat(maxLength - textLength(trimLine))
                   + inputInsertString + lastLineBreak;
-              })
+              }, getMaxLength)
               ed.replace(range, text);
             })
             break;
 
           case `InsertMaxLengthOnlyTextLines`:
             editorSelectionsLoopUnsupportTab((range, text) => {
-              text = textLoopOnlyTextLinesMaxLength(text, (lines, i, maxLength) => {
+              text = textLoopOnlyTextLines(text, (lines, i, maxLength) => {
                 const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
                 const trimLine = _trimLast(lines[i], ['\r']);
                 lines[i] = trimLine
                   + ' '.repeat(maxLength - textLength(trimLine))
                   + inputInsertString + lastLineBreak;
-              })
+              }, getMaxLength)
               ed.replace(range, text);
             })
             break;
@@ -518,7 +518,6 @@ function activate(context) {
 
 }
 
-// this method is called when your extension is deactivated
 function deactivate() {}
 
 module.exports = {
