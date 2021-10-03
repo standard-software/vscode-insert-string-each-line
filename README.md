@@ -30,6 +30,8 @@ Following commands are available:
 - `Insert String Each Line : Begin Text : Only Min Indent Text Lines`
 - `Insert String Each Line : Min Indent : All Lines`
 - `Insert String Each Line : Min Indent : Only Text Lines`
+- `Insert String Each Line : End Line : All Lines`
+- `Insert String Each Line : End Line : Only Text Lines`
 - `Insert String Each Line : Max Line Length : All Lines`
 - `Insert String Each Line : Max Line Length : Only Text Lines`
 - `Insert String Each Line : Delete String Begin of Text`
@@ -38,6 +40,7 @@ Following commands are available:
 Begin Line = Beginning of line.(line[0])  
 Begin Text = The beginning of the text on each line.  
 Min Indent = Minimum indentation position in the selection.  
+End Line = End of line.
 Max Line Length = End of line at maximum length of selection.  
 
 ## License

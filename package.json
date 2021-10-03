@@ -35,6 +35,8 @@
     "onCommand:InsertStringEachLine.InsertBeginTextOnlyMinIndent",
     "onCommand:InsertStringEachLine.InsertMinIndentAllLines",
     "onCommand:InsertStringEachLine.InsertMinIndentOnlyTextLines",
+    "onCommand:InsertStringEachLine.InsertEndLineAllLines",
+    "onCommand:InsertStringEachLine.InsertEndLineOnlyTextLines",
     "onCommand:InsertStringEachLine.InsertMaxLengthAllLines",
     "onCommand:InsertStringEachLine.InsertMaxLengthOnlyTextLines",
     "onCommand:InsertStringEachLine.DeleteBeginText",
@@ -74,6 +76,14 @@
       {
         "command": "InsertStringEachLine.InsertMinIndentOnlyTextLines",
         "title": "Insert String Each Line : Min Indent : Only Text Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertEndLineAllLines",
+        "title": "Insert String Each Line : End Line : All Lines"
+      },
+      {
+        "command": "InsertStringEachLine.InsertEndLineOnlyTextLines",
+        "title": "Insert String Each Line : End Line : Only Text Lines"
       },
       {
         "command": "InsertStringEachLine.InsertMaxLengthAllLines",

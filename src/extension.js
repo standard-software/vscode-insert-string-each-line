@@ -384,6 +384,30 @@ function activate(context) {
             }, getMinIndent)
             break;
 
+          case `InsertEndLineAllLines`:
+            editorSelectionsLoopUnsupportTab((range, text) => {
+              text = textLoopAllLines(text, (lines, i) => {
+                const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
+                const trimLine = _trimLast(lines[i], ['\r']);
+                lines[i] = trimLine
+                  + inputInsertString + lastLineBreak;
+              })
+              ed.replace(range, text);
+            })
+            break;
+
+          case `InsertEndLineOnlyTextLines`:
+            editorSelectionsLoopUnsupportTab((range, text) => {
+              text = textLoopOnlyTextLines(text, (lines, i) => {
+                const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
+                const trimLine = _trimLast(lines[i], ['\r']);
+                lines[i] = trimLine
+                  + inputInsertString + lastLineBreak;
+              })
+              ed.replace(range, text);
+            })
+            break;
+
           case `InsertMaxLengthAllLines`:
             editorSelectionsLoopUnsupportTab((range, text) => {
               text = textLoopAllLines(text, (lines, i, maxLength) => {
@@ -489,6 +513,18 @@ function activate(context) {
   context.subscriptions.push(
     vscode.commands.registerCommand(`InsertStringEachLine.InsertMinIndentOnlyTextLines`, () => {
       extensionMain(`InsertMinIndentOnlyTextLines`);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`InsertStringEachLine.InsertEndLineAllLines`, () => {
+      extensionMain(`InsertEndLineAllLines`);
+    })
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`InsertStringEachLine.InsertEndLineOnlyTextLines`, () => {
+      extensionMain(`InsertEndLineOnlyTextLines`);
     })
   );
 
