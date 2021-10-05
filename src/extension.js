@@ -1,162 +1,11 @@
 const vscode = require('vscode');
 const split = require('graphemesplit');
-
-const isBoolean = (value) => typeof value === 'boolean';
-const isUndefined = (value) => typeof value === 'undefined';
-const isNumber = (value) => {
-  return (typeof value === 'number' && (isFinite(value)));
-};
-
-const __max = (array) => {
-  if (array.length === 0) {
-    return null;
-  }
-  let result = array[0];
-  for (let i = 0, l = array.length; i < l; i += 1) {
-    if (!isNumber(array[i])) {
-      throw new TypeError(
-        '__max args(array) element is not number',
-      );
-    }
-    if (result < array[i]) {
-      result = array[i];
-    }
-  }
-  return result;
-};
-
-const _indexOfFirst = (str, search, indexStart) => {
-  if (search === '') {
-    return -1;
-  }
-  return str.indexOf(search, indexStart);
-};
-
-const _indexOfLast = (
-  str, search, indexStart = __max([0, str.length - 1]),
-) => {
-  if (search === '') {
-    return -1;
-  }
-  return str.lastIndexOf(search, indexStart);
-};
-
-const _isFirst = (str, search) => {
-  return _indexOfFirst(str, search) === 0;
-};
-
-const _isLast = (str, search) => {
-  const result = _indexOfLast(str, search);
-  if (result === -1) {
-    return false;
-  }
-  return result === str.length - search.length;
-};
-
-const _findFirstIndex = (array, func) => {
-  for (let i = 0, l = array.length; i < l; i += 1) {
-    const resultFunc = func(array[i], i, array);
-    if (!isBoolean(resultFunc)) {
-      throw new TypeError(
-        '_findFirstIndex args(compareFunc) result is not boolean',
-      );
-    }
-    if (resultFunc) {
-      return i;
-    }
-  }
-  return -1;
-};
-
-const _findFirst = (array, func) => {
-  const resultIndex = _findFirstIndex(array, func);
-  if (resultIndex === -1) {
-    return undefined;
-  }
-  return array[resultIndex];
-};
-
-const _deleteIndex = (
-  str, indexStart, indexEnd = indexStart,
-) => {
-  const startStr = str.slice(0, indexStart);
-  const endStr = str.slice(indexEnd + 1, str.length);
-  return startStr + endStr;
-};
-
-const _deleteLength = (
-  str, index, length = str.length - index,
-) => {
-  return _deleteIndex(str, index, index + length - 1);
-};
-
-const _deleteFirst = (str, length = 1) => {
-  return _deleteLength(
-    str, 0, length,
-  );
-};
-
-const _deleteLast = (str, length = 1) => {
-  return _deleteLength(
-    str, str.length - length, length,
-  );
-};
-
-const _trimFirst = (
-  str,
-  valueArray = [' ', '\t', '\r', '\n'],
-) => {
-  while (true) {
-    const value = _findFirst(
-      valueArray, value => _isFirst(str, value),
-    );
-    if (isUndefined(value)) {
-      break;
-    }
-    str = _deleteFirst(str, value.length);
-  }
-  return str;
-};
-
-const _trimLast = (
-  str,
-  valueArray = [' ', '\r', '\n'],
-) => {
-  while (true) {
-    const value = _findFirst(
-      valueArray, value => _isLast(str, value),
-    );
-    if (isUndefined(value)) {
-      break;
-    }
-    str = _deleteLast(str, value.length);
-  }
-  return str;
-};
-
-const _subLength = (
-  str, index, length = str.length - index,
-) => {
-  return str.substring(index, index + length);
-};
-
-const _subFirst = (str, length = 1) => {
-  return _subLength(
-    str, 0, length,
-  );
-};
-
-const _subLast = (str, length = 1) => {
-  return _subLength(
-    str, str.length - length, length,
-  );
-};
-
-const _insert = (str, value, index = 0) => {
-  str = _subFirst(str, index)
-    + value + _subLast(str, str.length - index);
-  return str;
-};
+const {
+  _isFirst, _isLast,
+  _deleteLast,
+  _trimFirst, _trimLast,
+  _insert,
+} = require('./parts.js')
 
 function activate(context) {
 
@@ -168,16 +17,12 @@ function activate(context) {
       return;
     }
 
-    const insertString = vscode.workspace.getConfiguration(`InsertStringEachLine`).get(`insertString`);
-
-    const options = {
+    vscode.window.showInputBox({
       ignoreFocusOut: true,
       placeHolder: ``,
       prompt: `Input Insert/Delete String`,
-      value: insertString,
-    };
-
-    vscode.window.showInputBox(options).then(inputInsertString => {
+      value: vscode.workspace.getConfiguration(`InsertStringEachLine`).get(`insertString`),
+    }).then(inputInsertString => {
       if (!vscode.window.activeTextEditor) {
         vscode.window.showInformationMessage( `No editor is active` );
         return;

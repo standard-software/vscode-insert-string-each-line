@@ -9,10 +9,10 @@ This extension inserts or removes strings at the beginning of a line, at the beg
 
 ## Install
 
-Search for "Insert String Each Line" in the Marketplace
+Search for "Insert String Each Line" in the Marketplace  
 https://marketplace.visualstudio.com/vscode
 
-or here
+or here  
 https://marketplace.visualstudio.com/items?itemName=SatoshiYamamoto.vscode-insert-string-each-line
 
 ## Usage
@@ -57,6 +57,10 @@ Released under the [MIT License][license].
 [license]: https://github.com/standard-software/vscode-insert-string-each-line/blob/master/LICENSE
 
 ## Version
+
+### 1.3.0
+2021/10/06(Wed)
+- Refactoring Divide into modules
 
 ### 1.2.0
 2021/10/03(Sun)
