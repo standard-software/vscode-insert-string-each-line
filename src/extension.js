@@ -113,13 +113,6 @@ function activate(context) {
           };
           return lines.join('\n');
         }
-        /** Readability is low, so drop it */
-        // const textLoopOnlyTextLines = (text, func, linesFunc = () => {}) => {
-        //   return textLoopAllLines(text, (lines, i, linesFuncResult) => {
-        //     if (lines[i].trim() === '') { return; }
-        //     func(lines, i, linesFuncResult)
-        //   }, linesFunc)
-        // }
 
         const textLoopOnlyMinIndent = (text, func) => {
           const lines = text.split(`\n`);
@@ -132,15 +125,6 @@ function activate(context) {
           };
           return lines.join('\n');
         }
-        /** Readability is low, so drop it */
-        // const textLoopOnlyMinIndent = (text, func) => {
-        //   return textLoopAllLines(text, (lines, i, minIndent) => {
-        //     if (lines[i].trim() === '') { return; }
-        //     const indent = getIndent(lines[i]);
-        //     if (indent !== minIndent) { return; }
-        //     func(lines, i, indent);
-        //   }, getMinIndent)
-        // }
 
         switch (commandName) {
 
@@ -314,85 +298,99 @@ function activate(context) {
   }
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginLineAllLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertBeginLineAllLines`, () => {
       extensionMain(`InsertBeginLineAllLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginLineOnlyTextLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertBeginLineOnlyTextLines`, () => {
       extensionMain(`InsertBeginLineOnlyTextLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginLineOnlyMinIndent`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertBeginLineOnlyMinIndent`, () => {
       extensionMain(`InsertBeginLineOnlyMinIndent`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginTextAllLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertBeginTextAllLines`, () => {
       extensionMain(`InsertBeginTextAllLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginTextOnlyTextLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertBeginTextOnlyTextLines`, () => {
       extensionMain(`InsertBeginTextOnlyTextLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertBeginTextOnlyMinIndent`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertBeginTextOnlyMinIndent`, () => {
       extensionMain(`InsertBeginTextOnlyMinIndent`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertMinIndentAllLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertMinIndentAllLines`, () => {
       extensionMain(`InsertMinIndentAllLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertMinIndentOnlyTextLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertMinIndentOnlyTextLines`, () => {
       extensionMain(`InsertMinIndentOnlyTextLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertEndLineAllLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertEndLineAllLines`, () => {
       extensionMain(`InsertEndLineAllLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertEndLineOnlyTextLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertEndLineOnlyTextLines`, () => {
       extensionMain(`InsertEndLineOnlyTextLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertMaxLengthAllLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertMaxLengthAllLines`, () => {
       extensionMain(`InsertMaxLengthAllLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.InsertMaxLengthOnlyTextLines`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.InsertMaxLengthOnlyTextLines`, () => {
       extensionMain(`InsertMaxLengthOnlyTextLines`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.DeleteBeginText`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.DeleteBeginText`, () => {
       extensionMain(`DeleteBeginText`);
     })
   );
 
   context.subscriptions.push(
-    vscode.commands.registerCommand(`InsertStringEachLine.DeleteEndText`, () => {
+    vscode.commands.registerCommand(
+      `InsertStringEachLine.DeleteEndText`, () => {
       extensionMain(`DeleteEndText`);
     })
   );
