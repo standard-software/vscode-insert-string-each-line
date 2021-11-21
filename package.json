@@ -2,7 +2,7 @@
   "name": "vscode-insert-string-each-line",
   "displayName": "Insert String Each Line",
   "description": "Insert a string on each line.",
-  "version": "1.2.0",
+  "version": "1.3.1",
   "publisher": "SatoshiYamamoto",
   "author": {
     "name": "Satoshi Yamamoto",

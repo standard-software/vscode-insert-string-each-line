@@ -1,11 +1,12 @@
 const vscode = require('vscode');
 const split = require('graphemesplit');
 const {
+  isUndefined,
   _isFirst, _isLast,
   _deleteLast,
   _trimFirst, _trimLast,
   _insert,
-} = require('./parts.js')
+} = require('./parts/parts.js')
 
 function activate(context) {
 
@@ -22,7 +23,10 @@ function activate(context) {
       placeHolder: ``,
       prompt: `Input Insert/Delete String`,
       value: vscode.workspace.getConfiguration(`InsertStringEachLine`).get(`insertString`),
-    }).then(inputInsertString => {
+    }).then(inputString => {
+      if (isUndefined(inputString)) {
+        return;
+      }
       if (!vscode.window.activeTextEditor) {
         vscode.window.showInformationMessage( `No editor is active` );
         return;
@@ -131,7 +135,7 @@ function activate(context) {
           case `InsertBeginLineAllLines`:
             editorSelectionsLoop((range, text) => {
               text = textLoopAllLines(text, (lines, i) => {
-                lines[i] = inputInsertString + lines[i];
+                lines[i] = inputString + lines[i];
               })
               ed.replace(range, text);
             })
@@ -140,7 +144,7 @@ function activate(context) {
           case `InsertBeginLineOnlyTextLines`:
             editorSelectionsLoop((range, text) => {
               text = textLoopOnlyTextLines(text, (lines, i) => {
-                lines[i] = inputInsertString + lines[i];
+                lines[i] = inputString + lines[i];
               })
               ed.replace(range, text);
             })
@@ -149,7 +153,7 @@ function activate(context) {
           case `InsertBeginLineOnlyMinIndent`:
             editorSelectionsLoop((range, text) => {
               text = textLoopOnlyMinIndent(text, (lines, i) => {
-                lines[i] = inputInsertString + lines[i];
+                lines[i] = inputString + lines[i];
               })
               ed.replace(range, text);
             })
@@ -159,7 +163,7 @@ function activate(context) {
             editorSelectionsLoop((range, text) => {
               text = textLoopAllLines(text, (lines, i) => {
                 lines[i] = _insert(
-                  lines[i], inputInsertString,
+                  lines[i], inputString,
                   getIndent(lines[i]),
                 );
               })
@@ -171,7 +175,7 @@ function activate(context) {
             editorSelectionsLoop((range, text) => {
               text = textLoopOnlyTextLines(text, (lines, i) => {
                 lines[i] = _insert(
-                  lines[i], inputInsertString,
+                  lines[i], inputString,
                   getIndent(lines[i]),
                 );
               })
@@ -183,7 +187,7 @@ function activate(context) {
             editorSelectionsLoopUnsupportTab((range, text) => {
               text = textLoopOnlyMinIndent(text, (lines, i, indent) => {
                 lines[i] = _insert(
-                  lines[i], inputInsertString,
+                  lines[i], inputString,
                   indent,
                 );
               })
@@ -195,10 +199,10 @@ function activate(context) {
             editorSelectionsLoopUnsupportTab((range, text) => {
               text = textLoopAllLines(text, (lines, i, minIndent) => {
                 if (lines[i].trim() === '') {
-                  lines[i] = ' '.repeat(minIndent) + inputInsertString;
+                  lines[i] = ' '.repeat(minIndent) + inputString;
                   return;
                 }
-                lines[i] = _insert(lines[i], inputInsertString, minIndent)
+                lines[i] = _insert(lines[i], inputString, minIndent)
               }, getMinIndent)
               ed.replace(range, text);
             })
@@ -207,7 +211,7 @@ function activate(context) {
           case `InsertMinIndentOnlyTextLines`:
             editorSelectionsLoopUnsupportTab((range, text) => {
               text = textLoopOnlyTextLines(text, (lines, i, minIndent) => {
-                lines[i] = _insert(lines[i], inputInsertString, minIndent)
+                lines[i] = _insert(lines[i], inputString, minIndent)
               })
               ed.replace(range, text);
             }, getMinIndent)
@@ -219,7 +223,7 @@ function activate(context) {
                 const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
                 const trimLine = _trimLast(lines[i], ['\r']);
                 lines[i] = trimLine
-                  + inputInsertString + lastLineBreak;
+                  + inputString + lastLineBreak;
               })
               ed.replace(range, text);
             })
@@ -231,7 +235,7 @@ function activate(context) {
                 const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
                 const trimLine = _trimLast(lines[i], ['\r']);
                 lines[i] = trimLine
-                  + inputInsertString + lastLineBreak;
+                  + inputString + lastLineBreak;
               })
               ed.replace(range, text);
             })
@@ -244,7 +248,7 @@ function activate(context) {
                 const trimLine = _trimLast(lines[i], ['\r']);
                 lines[i] = trimLine
                   + ' '.repeat(maxLength - textLength(trimLine))
-                  + inputInsertString + lastLineBreak;
+                  + inputString + lastLineBreak;
               }, getMaxLength)
               ed.replace(range, text);
             })
@@ -257,7 +261,7 @@ function activate(context) {
                 const trimLine = _trimLast(lines[i], ['\r']);
                 lines[i] = trimLine
                   + ' '.repeat(maxLength - textLength(trimLine))
-                  + inputInsertString + lastLineBreak;
+                  + inputString + lastLineBreak;
               }, getMaxLength)
               ed.replace(range, text);
             })
@@ -267,9 +271,9 @@ function activate(context) {
             editorSelectionsLoop((range, text) => {
               text = textLoopOnlyTextLines(text, (lines, i) => {
                 const trimLine = _trimFirst(lines[i], [' ', '\t']);
-                const trimFirstInput = _trimFirst(inputInsertString, [' ']);
+                const trimFirstInput = _trimFirst(inputString, [' ']);
                 if (_isFirst(trimLine, trimFirstInput)) {
-                  lines[i] = lines[i].replace(inputInsertString, '');
+                  lines[i] = lines[i].replace(inputString, '');
                 }
               })
               ed.replace(range, text);
@@ -281,7 +285,7 @@ function activate(context) {
               text = textLoopOnlyTextLines(text, (lines, i) => {
                 const lastLineBreak = _isLast(lines[i], '\r') ? '\r' : '';
                 const trimLine = _trimLast(lines[i], [' ', '\t', '\r']);
-                const trimLastInput = _trimLast(inputInsertString, [' ']);
+                const trimLastInput = _trimLast(inputString, [' ']);
                 if (_isLast(trimLine, trimLastInput)) {
                   lines[i] = _trimLast(_deleteLast(trimLine, trimLastInput.length), [' ', '\t']) + lastLineBreak;
                 }
