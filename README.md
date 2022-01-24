@@ -1,4 +1,4 @@
-# VSCode extension - Insert String Each Line
+# VSCode extension - Insert String Each Line (deprecated)
 
 [![Version][version-badge]][marketplace]
 [![Ratings][ratings-badge]][marketplace-ratings]
@@ -9,9 +9,9 @@ This extension inserts or removes strings at the beginning of a line, at the beg
 
 ## Information
 
-This enhancement has been discontinued and future releases will be split in two to provide functionality.
+This extension is deprecated.
 
-Please use the following
+Please use the following extension. It is upward compatible and has more features.
 
 - vscode-begin-of-line  
 https://marketplace.visualstudio.com/items?itemName=SatoshiYamamoto.vscode-begin-of-line  
@@ -71,6 +71,10 @@ Released under the [MIT License][license].
 [license]: https://github.com/standard-software/vscode-insert-string-each-line/blob/master/LICENSE
 
 ## Version
+
+### 1.3.2
+2022/01/24(Mon)
+- update (deprecated)
 
 ### 1.3.1
 2021/11/15(Mon)
